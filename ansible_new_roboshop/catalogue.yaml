@@ -30,10 +30,10 @@
         dest: /app 
         remote_src: yes
     
-    - name: npm install 
+    - name: npm installlling 
       ansible.builtin.command: npm install 
-        args:    
-          chdir: /app # it means change the directry to /app and run the command 
+      args:    
+        chdir: /app # it means change the directry to /app and run the command 
 
     - name: catalogue service 
       ansible.builtin.copy:
