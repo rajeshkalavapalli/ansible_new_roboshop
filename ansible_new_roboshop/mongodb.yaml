@@ -4,7 +4,7 @@
   tasks: 
     - name: intalling mongodb
       ansible.builtin.package:
-        name: mongodb-org-shell
+        name: mongodb-org
         state: present
 
     - name: copying  mongo repo
