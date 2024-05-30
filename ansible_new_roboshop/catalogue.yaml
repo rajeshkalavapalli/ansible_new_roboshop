@@ -1,0 +1,64 @@
+- name: install mongodb
+  hosts: catalogue
+  become: yes 
+  tasks:
+    - name: desabled and enable 
+      ansible.builtin.shell: dnf module disable nodejs -y ; dnf module enable nodejs:18 -y
+
+    - name: installing node js 
+      ansible.builtin.dnf:
+        name: nodejs
+        state: present
+
+    - name: adding user 
+      ansible.builtin.user:
+        name: roboshop
+
+    - name: createing directory 
+      ansible.builtin.file:
+        path: /app
+        state: directory
+
+    - name: downloading creating 
+      ansible.builtin.get_url:
+        url: https://roboshop-builds.s3.amazonaws.com/catalogue.zip
+        dest: /tmp
+
+    - name: unzipping
+      ansible.builtin.unarchive:
+        src: /tmp/catalogue.zip
+        dest: /app 
+        remote_src: yes
+    
+    - name: npm install 
+      ansible.builtin.command: npm install 
+        args:    
+          chdir: /app # it means change the directry to /app and run the command 
+
+    - name: catalogue service 
+      ansible.builtin.copy:
+        src: catalogue.service
+        dest: /etc/systemd/system/catalogue.service
+
+    - name: demon reload 
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
+    - name: mongodb repo copy 
+      ansible.builtin.copy:
+        src: mongo.repo
+        dest: /etc/yum.repos.d/mongo.repo
+    
+    - name: intalling mongodb
+      ansible.builtin.package:
+        name: mongodb-org-shell
+        state: present
+
+    # - name: loading schema 
+    #   ansible.builtin.command: mongo --host mongodb.bigmatrix.in </app/schema/catalogue.js
+
+
+
+
+    
+
