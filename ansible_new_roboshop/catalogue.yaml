@@ -54,10 +54,24 @@
         name: mongodb-org-shell
         state: present
 
-    # - name: loading schema 
-    #   ansible.builtin.command: mongo --host mongodb.bigmatrix.in </app/schema/catalogue.js
+    - name: get the product catageorys and count 
+      ansible.builtin.command: Mongo --host mongodb.bigmatrix.in  --quiet --equal 'db = db.getsibling("catalogue") ; db.product.count ()
+      register: product_count 
 
+    # - name: printing the count 
+    #   ansible.builtin.debug:
+    #     msg: "print count: {{product_count}}"
 
+    
+    - name: loading schema 
+      ansible.builtin.command: mongo --host mongodb.bigmatrix.in </app/schema/catalogue.js
+      when: product_count.stdout == "0"
+
+    - name: start and enabled  catalogue service 
+      ansible.builtin.service: 
+        name: httpd
+        enabled: yes
+        state: restarted
 
 
     
